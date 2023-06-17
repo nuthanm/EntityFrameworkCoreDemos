@@ -1,5 +1,7 @@
 ﻿namespace EntityFrameworkCore.Demo.Console;
-internal class Program
+
+using System;
+public class Program
 {
     static void Main(string[] args)
     {
