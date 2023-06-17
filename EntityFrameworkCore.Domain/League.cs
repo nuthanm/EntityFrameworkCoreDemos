@@ -1,10 +1,8 @@
-﻿namespace EntityFrameworkCore.Domain
+﻿namespace EntityFrameworkCore.Domain;
+public class League
 {
-    public class League
-    {
-        public int Id { get; set; }
+    public int Id { get; set; }
 
-        public string Name { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
 
-    }
 }

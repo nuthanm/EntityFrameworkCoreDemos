@@ -1,7 +1,5 @@
-﻿namespace EntityFrameworkCore.Data
+﻿namespace EntityFrameworkCore.Data;
+public class Class1
 {
-    public class Class1
-    {
 
-    }
 }
