@@ -1,5 +1,7 @@
 ﻿using EntityFrameworkCore.Domain;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 
 namespace EntityFrameworkCore.Data;
 public class FootBallDBContext : DbContext
@@ -12,7 +14,9 @@ public class FootBallDBContext : DbContext
         // Add sql server database connection string 
         // (localdb)\\MSSQLLocalDB => Local Visual Studio SQL Server Object Explore
         // Initial Catalog = Name of the database   
-        optionsBuilder.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=FootballLeague_EfCore");
+        optionsBuilder.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=FootballLeague_EfCore;Encrypt=False")
+            .LogTo(Console.WriteLine, new[] { DbLoggerCategory.Database.Command.Name }, LogLevel.Information)
+            .EnableSensitiveDataLogging();
 
         /*Note:  Add Encrypt to Connection String
         Due to a change in Entity Framework Core 7, you will get the following error when attempting to scaffold.

@@ -1,15 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net7.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net7.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EntityFrameworkCore.Data\EntityFrameworkCore.Data.csproj" />
-    <ProjectReference Include="..\EntityFrameworkCore.Domain\EntityFrameworkCore.Domain.csproj" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.7">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
+	
+	<ItemGroup>
+		<ProjectReference Include="..\EntityFrameworkCore.Data\EntityFrameworkCore.Data.csproj" />
+		<ProjectReference Include="..\EntityFrameworkCore.Domain\EntityFrameworkCore.Domain.csproj" />
+	</ItemGroup>
 
 </Project>
