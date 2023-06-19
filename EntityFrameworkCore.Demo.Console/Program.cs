@@ -59,9 +59,39 @@ public class Program
 
         // If we pass Id then if record exists then it updates or else insert
         // If Id itself not pass then it inserts the record even if we use Update method
-        TeamUpdate_else_Insert();
+        ////////TeamUpdate_else_Insert();
+
+        // Delete the record from an entity
+        // Delete data when there is a relationship
+        // Same statement if we delete the record from main table then it deletes that record in child table too.
+        SimpleDeleteEntryFromEntity();
+
+        
 
         Console.ReadLine();
+    }
+
+    private static void SimpleDeleteEntryFromEntity()
+    {
+        var deleteDuplicateRecord = context.Leagues.Find(7);
+        context.Leagues.Remove(deleteDuplicateRecord);
+        context.SaveChanges();
+
+        /*
+         * info: 19-06-2023 20:05:55.490 RelationalEventId.CommandExecuted[20101] (Microsoft.EntityFrameworkCore.Database.Command)
+           Executed DbCommand (56ms) [Parameters=[@__p_0='4'], CommandType='Text', CommandTimeout='30']
+           SELECT TOP(1) [l].[Id], [l].[Name]
+           FROM [Leagues] AS [l]
+           WHERE [l].[Id] = @__p_0
+
+           info: 19-06-2023 20:05:55.680 RelationalEventId.CommandExecuted[20101] (Microsoft.EntityFrameworkCore.Database.Command)
+           Executed DbCommand (9ms) [Parameters=[@p0='4'], CommandType='Text', CommandTimeout='30']
+           SET IMPLICIT_TRANSACTIONS OFF;
+           SET NOCOUNT ON;
+           DELETE FROM [Leagues]
+           OUTPUT 1
+           WHERE [Id] = @p0;
+         */
     }
 
     private static void TeamUpdate_else_Insert()
