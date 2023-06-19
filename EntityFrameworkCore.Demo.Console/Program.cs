@@ -60,6 +60,7 @@ public class Program
 
         // Connected architecture
         // Until all records from the table you read this should connect with DB and locked the table.
+        // Even this works but inefficient
         var leagues = context.Leagues;
         foreach (var league in leagues)
         {
