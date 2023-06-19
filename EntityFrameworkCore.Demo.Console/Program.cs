@@ -6,7 +6,7 @@ using System;
 public class Program
 {
     // Instance the object of DBContext file.
-    private static readonly FootBallDBContext footBallDBContext = new FootBallDBContext();
+    private static readonly FootBallDBContext context = new FootBallDBContext();
 
     static void Main(string[] args)
     {
@@ -26,20 +26,58 @@ public class Program
         ////////AddTeamsWithLeagueId(league);
         //footBallDBContext.SaveChanges();
 
+        //Simple Select to get all records from League
+        GetListOfLeagues();
+
         Console.ReadLine();
+    }
+
+    private static void GetListOfLeagues()
+    {
+        /*
+                 * info: 19-06-2023 13:42:55.841 RelationalEventId.CommandExecuted[20101] (Microsoft.EntityFrameworkCore.Database.Command)
+                   Executed DbCommand (39ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+                   SELECT [l].[Id], [l].[Name]
+                   FROM [Leagues] AS [l]
+
+                   // Output
+                    1 - Potti Perimier League            
+                    2 - Nani Perimier League            
+                    3 - Nani vs potti Perimier League            
+                    4 - NP Perimier League            
+                    5 - NP Perimier League            
+                    6 - NP Perimier League            
+                    7 - League information
+                 */
+
+        // The below statement connects to db and get all data and store it in leageus inmemory
+        // so for each here get the data from inmemory
+        //var leagues = context.Leagues.ToList();
+        //foreach (var league in leagues)
+        //{
+        //    Console.WriteLine($"{league.Id} - {league.Name}");
+        //}
+
+        // Connected architecture
+        // Until all records from the table you read this should connect with DB and locked the table.
+        var leagues = context.Leagues;
+        foreach (var league in leagues)
+        {
+            Console.WriteLine($"{league.Id} - {league.Name}");
+        }
     }
 
     private static async Task CreateLeagueAsync()
     {
-        await footBallDBContext.Leagues.AddAsync(new Domain.League { Name = "Nani Perimier League" });
-        await footBallDBContext.SaveChangesAsync();
+        await context.Leagues.AddAsync(new Domain.League { Name = "Nani Perimier League" });
+        await context.SaveChangesAsync();
     }
 
     private static void CreateLeauge()
     {
         var league = new Domain.League { Name = "NP Perimier League" };
-        footBallDBContext.Leagues.Add(league);
-        footBallDBContext.SaveChanges();
+        context.Leagues.Add(league);
+        context.SaveChanges();
 
         // Database query
 
@@ -85,8 +123,8 @@ public class Program
             }
 
         };
-     
-        footBallDBContext.AddRange(listOfTeamsUsingNavigationProperty);
+
+        context.AddRange(listOfTeamsUsingNavigationProperty);
 
         // Database Query
 
@@ -132,13 +170,13 @@ public class Program
             }
 
         };
-        footBallDBContext.AddRange(listOfTeams);
+        context.AddRange(listOfTeams);
     }
 
     private static void CreateTeam(League league)
     {
         var team = new Domain.Team { LeagueId = league.Id, Name = "NR" };
-        footBallDBContext.Teams.Add(team);
+        context.Teams.Add(team);
 
         //Database Query
 
@@ -172,8 +210,8 @@ public class Program
     {
         var league = new League { Name = "League information" };
         var team = new Domain.Team { Name = "Team", League = league };
-        footBallDBContext.Add(team); // context decide it's Teams entity based out of object we are passing
-        footBallDBContext.SaveChanges();
+        context.Add(team); // context decide it's Teams entity based out of object we are passing
+        context.SaveChanges();
 
         // First creates league and it uses in Teams object
         // No error it throws
