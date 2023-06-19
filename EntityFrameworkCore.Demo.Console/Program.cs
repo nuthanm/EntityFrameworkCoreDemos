@@ -28,17 +28,115 @@ public class Program
         //footBallDBContext.SaveChanges();
 
         //Simple Select to get all records from League
-        // GetListOfLeagues();
+        ////////GetListOfLeagues();
 
         // Get leagueNames
-        // GetFilteredLeagueNames();
+        ////////GetFilteredLeagueNames();
 
         // Get leagueNames based out of user entered
-        Console.Write("Enter League Information which you are looking for? : ");
-        var leguageNameToFilter = Console.ReadLine();
-        GetFilteredLeagueNames(leguageNameToFilter);
+        //Console.Write("Enter League Information which you are looking for? : ");
+        //var leguageNameToFilter = Console.ReadLine();
+        ////////GetFilteredLeagueNames(leguageNameToFilter);
+
+
+        //Get first record from the result set
+        ////////GetSingleResultSet();
+
+        // Checks whether record exist or not and it returns bool
+        ////////RecordExistsUsingAny();
+
+        // Check whether data is there in the table
+        GetDataIfThereUsingFindAsync();
 
         Console.ReadLine();
+    }
+
+    private static void GetDataIfThereUsingFindAsync()
+    {
+        var leagueData = context.Leagues.FindAsync(7);
+        Console.WriteLine(leagueData.Result?.Name);
+
+        /*
+         * info: 19-06-2023 18:25:46.730 RelationalEventId.CommandExecuted[20101] (Microsoft.EntityFrameworkCore.Database.Command)
+            Executed DbCommand (56ms) [Parameters=[@__p_0='7'], CommandType='Text', CommandTimeout='30']
+            SELECT TOP(1) [l].[Id], [l].[Name]
+            FROM [Leagues] AS [l]
+            WHERE [l].[Id] = @__p_0
+
+            Output:
+            League information
+         * 
+         */
+    }
+
+    private static void RecordExistsUsingAny()
+    {
+        var isRecordExists = context.Leagues.Any(l => l.Name.Contains("NPL"));
+        Console.WriteLine($"Requested items are available? : {isRecordExists}");
+
+        /*
+         * info: 19-06-2023 18:17:03.357 RelationalEventId.CommandExecuted[20101] (Microsoft.EntityFrameworkCore.Database.Command)
+           Executed DbCommand (43ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+            SELECT CASE
+                WHEN EXISTS (
+                    SELECT 1
+                    FROM [Leagues] AS [l]
+                    WHERE [l].[Name] LIKE N'%NP%') THEN CAST(1 AS bit)
+                ELSE CAST(0 AS bit)
+            END
+            
+            Output:
+            Requested items are available? : True
+         */
+
+        // For False record as Input:NPL
+        /*
+         * info: 19-06-2023 18:18:04.339 RelationalEventId.CommandExecuted[20101] (Microsoft.EntityFrameworkCore.Database.Command)
+           Executed DbCommand (30ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+            SELECT CASE
+                WHEN EXISTS (
+                    SELECT 1
+                    FROM [Leagues] AS [l]
+                    WHERE [l].[Name] LIKE N'%NPL%') THEN CAST(1 AS bit)
+                ELSE CAST(0 AS bit)
+            END
+            
+            Output:
+            Requested items are available? : False
+         */
+    }
+
+    private static void GetSingleResultSet()
+    {
+        var record = context.Leagues.Where(x => x.Name.Contains("NP")).FirstOrDefault();
+        Console.WriteLine("This record is with Where: " + record?.Name);
+        /*
+         * info: 19-06-2023 18:07:08.650 RelationalEventId.CommandExecuted[20101] (Microsoft.EntityFrameworkCore.Database.Command)
+           Executed DbCommand (32ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+            SELECT TOP(1) [l].[Id], [l].[Name]
+            FROM [Leagues] AS [l]
+            WHERE [l].[Name] LIKE N'%NP%'
+            
+            Output:
+            This record is with Where: NP Perimier League
+        * 
+         */
+        var recordWithOutWhere = context.Leagues.FirstOrDefault(x => x.Name.Contains("NP"));
+        Console.WriteLine("This record is without Where: " + recordWithOutWhere?.Name);
+
+        /*
+         * info: 19-06-2023 18:07:08.819 RelationalEventId.CommandExecuted[20101] (Microsoft.EntityFrameworkCore.Database.Command)
+            Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+                SELECT TOP(1) [l].[Id], [l].[Name]
+                FROM [Leagues] AS [l]
+                WHERE [l].[Name] LIKE N'%NP%'
+            
+            Output:
+            This record is without Where: NP Perimier League
+
+         */
+
+        // First vs Single => First record from multiple records but Single by default we get one record in resultset
     }
 
     private static void GetFilteredLeagueNames()
@@ -82,7 +180,7 @@ public class Program
             Output:
             League information
          */
-        
+
         // Override value
         filter = "NP";
         var partialLeagueNames = context.Leagues.Where(league => league.Name.Contains(filter)).ToList();
@@ -107,7 +205,7 @@ public class Program
 
         // Acheive the above result using EF Functions
         filter = "NP";
-        var partialLeagueNamesUsingEFFUnctions = context.Leagues.Where(league => EF.Functions.Like(league.Name,$"{filter}%")).ToList();
+        var partialLeagueNamesUsingEFFUnctions = context.Leagues.Where(league => EF.Functions.Like(league.Name, $"{filter}%")).ToList();
         foreach (var league in partialLeagueNamesUsingEFFUnctions)
         {
             Console.WriteLine(league.Name);
