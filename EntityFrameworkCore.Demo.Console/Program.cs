@@ -4,6 +4,8 @@ using EntityFrameworkCore.Data;
 using EntityFrameworkCore.Domain;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Diagnostics.CodeAnalysis;
+
 public class Program
 {
     // Instance the object of DBContext file.
@@ -48,8 +50,131 @@ public class Program
         // Check whether data is there in the table
         ////////GetDataIfThereUsingFindAsync();
 
-        GetListOfLeagueNamesUsingMethodSyntax();
+        // Acheive the same thing using Method syntax
+        ////////GetListOfLeagueNamesUsingMethodSyntax();
+
+        // Traditional way of updting the record
+        ////////UpdateTheRecordUsingTraditionalWay();
+
+
+        // If we pass Id then if record exists then it updates or else insert
+        // If Id itself not pass then it inserts the record even if we use Update method
+        TeamUpdate_else_Insert();
+
         Console.ReadLine();
+    }
+
+    private static void TeamUpdate_else_Insert()
+    {
+        // Scenario 1: Passed valid ID in teams
+        var team = new Team
+        {
+            Id = 1,
+            Name = "Test",
+            LeagueId = 7
+        };
+        context.Teams.Update(team);
+        context.SaveChanges();
+
+        var updatedTeam = context.Teams.Find(1);
+        Console.WriteLine($"Updated team name: {updatedTeam.Name}");
+
+        /*
+         * info: 19-06-2023 19:52:53.482 RelationalEventId.CommandExecuted[20101] (Microsoft.EntityFrameworkCore.Database.Command)
+           Executed DbCommand (60ms) [Parameters=[@p2='1', @p0='7', @p1='Test' (Nullable = false) (Size = 4000)], CommandType='Text', CommandTimeout='30']
+           SET IMPLICIT_TRANSACTIONS OFF;
+           SET NOCOUNT ON;
+           UPDATE [Teams] SET [LeagueId] = @p0, [Name] = @p1
+           OUTPUT 1
+           WHERE [Id] = @p2;
+
+        Output:
+        Updated team name: Test
+         */
+
+        // Scenario 2: Passed invalid ID in teams
+        // Exception: The database operation was expected to affect 1 row(s), but actually affected 0 row(s); data may have been modified or deleted since entities were loaded. See http://go.microsoft.com/fwlink/?LinkId=527962 for information on understanding and handling optimistic concurrency exceptions.
+        ////team = new Team
+        ////{
+        ////    Id = 11,
+        ////    Name = "Test",
+        ////    LeagueId = 7
+        ////};
+        ////context.Teams.Update(team);
+        ////context.SaveChanges();
+
+        ////var teamInfo = context.Teams.Find(1);
+        ////Console.WriteLine($"Updated team name: {teamInfo.Name}");
+
+
+        // Scenario 3: No Id in team object
+        team = new Team
+        {
+            Name = "Test insertion 1",
+            LeagueId = 7
+        };
+        context.Teams.Update(team);
+        context.SaveChanges();
+
+        var teamInfo = context.Teams.Find(team.Id);
+        Console.WriteLine($"Updated team name: {teamInfo.Name}");
+
+        /*
+         * info: 19-06-2023 19:56:48.127 RelationalEventId.CommandExecuted[20101] (Microsoft.EntityFrameworkCore.Database.Command)
+           Executed DbCommand (7ms) [Parameters=[@p0='7', @p1='Test insertion' (Nullable = false) (Size = 4000)], CommandType='Text', CommandTimeout='30']
+            SET IMPLICIT_TRANSACTIONS OFF;
+            SET NOCOUNT ON;
+            INSERT INTO [Teams] ([LeagueId], [Name])
+            OUTPUT INSERTED.[Id]
+            VALUES (@p0, @p1);
+
+            Output:
+            Updated team name: Test
+         */
+    }
+
+    private static void UpdateTheRecordUsingTraditionalWay()
+    {
+        // Get the record
+        var league = context.Leagues.Find(7);
+
+        // Modify the column value
+        if (league is not null)
+        {
+            Console.WriteLine($"Current League Name (Before Update):{league.Name}");
+            league.Name = "First ever league";
+
+            // Update it
+            context.SaveChanges();
+        }
+
+        var updatedRecord = context.Leagues.Find(7);
+        Console.Write($"Updated League Name:{updatedRecord.Name}");
+
+
+        /*
+         * info: 19-06-2023 19:41:24.228 RelationalEventId.CommandExecuted[20101] (Microsoft.EntityFrameworkCore.Database.Command)
+           Executed DbCommand (93ms) [Parameters=[@__p_0='7'], CommandType='Text', CommandTimeout='30']
+           SELECT TOP(1) [l].[Id], [l].[Name]
+           FROM [Leagues] AS [l]
+           WHERE [l].[Id] = @__p_0
+      
+      Output:
+      Current League Name (Before Update):League information
+        
+          info: 19-06-2023 19:41:24.477 RelationalEventId.CommandExecuted[20101] (Microsoft.EntityFrameworkCore.Database.Command)
+          Executed DbCommand (7ms) [Parameters=[@p1='7', @p0='First ever league' (Nullable = false) (Size = 4000)], CommandType='Text', CommandTimeout='30']
+          SET IMPLICIT_TRANSACTIONS OFF;
+          SET NOCOUNT ON;
+          UPDATE [Leagues] SET [Name] = @p0
+          OUTPUT 1
+          WHERE [Id] = @p1;
+
+      Output:
+      Updated League Name:First ever league
+
+         * 
+         */
     }
 
     private static void GetListOfLeagueNamesUsingMethodSyntax()

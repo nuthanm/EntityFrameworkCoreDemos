@@ -1,7 +1,6 @@
 ﻿using EntityFrameworkCore.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System.Diagnostics;
 
 namespace EntityFrameworkCore.Data;
 public class FootBallDBContext : DbContext
