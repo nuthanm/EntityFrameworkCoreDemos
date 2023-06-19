@@ -46,9 +46,36 @@ public class Program
         ////////RecordExistsUsingAny();
 
         // Check whether data is there in the table
-        GetDataIfThereUsingFindAsync();
+        ////////GetDataIfThereUsingFindAsync();
 
+        GetListOfLeagueNamesUsingMethodSyntax();
         Console.ReadLine();
+    }
+
+    private static void GetListOfLeagueNamesUsingMethodSyntax()
+    {
+        var filter = "NP";
+        var listOfLeagueNamesUsingMethodSyntax = (from league in context.Leagues
+                                                  where EF.Functions.Like(league.Name, $"{filter}%")
+                                                  select league).ToList();
+
+        foreach (var league in listOfLeagueNamesUsingMethodSyntax)
+        {
+            Console.WriteLine(league.Name);
+        }
+
+        /*
+         * info: 19-06-2023 18:34:37.125 RelationalEventId.CommandExecuted[20101] (Microsoft.EntityFrameworkCore.Database.Command)
+           Executed DbCommand (47ms) [Parameters=[@__Format_1='NP%' (Size = 4000)], CommandType='Text', CommandTimeout='30']
+            SELECT [l].[Id], [l].[Name]
+            FROM [Leagues] AS [l]
+            WHERE [l].[Name] LIKE @__Format_1
+
+            Output:
+            NP Perimier League
+            NP Perimier League
+            NP Perimier League
+         */
     }
 
     private static void GetDataIfThereUsingFindAsync()
@@ -287,7 +314,6 @@ public class Program
          */
 
     }
-
 
     static void AddTeamsWithLeagueId(League league)
     {
