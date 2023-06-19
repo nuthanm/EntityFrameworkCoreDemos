@@ -64,11 +64,28 @@ public class Program
         // Delete the record from an entity
         // Delete data when there is a relationship
         // Same statement if we delete the record from main table then it deletes that record in child table too.
-        SimpleDeleteEntryFromEntity();
+        ////////SimpleDeleteEntryFromEntity();
 
-        
+        TrackingVsNoTracking();
 
         Console.ReadLine();
+    }
+
+    private static void TrackingVsNoTracking()
+    {
+        var withTracking = context.Leagues.FirstOrDefault(x => x.Id == 2);
+        var withOutTracking = context.Leagues.AsNoTracking().FirstOrDefault(x => x.Id == 2);
+
+        // AsNoTracking() - tells not to track after you get the data and no need to maintain in memory
+
+        withTracking.Name = "Test for tracking";
+        withOutTracking.Name = "Test for without tracking";
+
+        var entriesBeforeSave = context.ChangeTracker.Entries();
+
+        context.SaveChanges();
+
+        var entriesAfterSave = context.ChangeTracker.Entries();
     }
 
     private static void SimpleDeleteEntryFromEntity()
