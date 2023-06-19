@@ -2,6 +2,7 @@
 
 using EntityFrameworkCore.Data;
 using EntityFrameworkCore.Domain;
+using Microsoft.EntityFrameworkCore;
 using System;
 public class Program
 {
@@ -27,9 +28,102 @@ public class Program
         //footBallDBContext.SaveChanges();
 
         //Simple Select to get all records from League
-        GetListOfLeagues();
+        // GetListOfLeagues();
+
+        // Get leagueNames
+        // GetFilteredLeagueNames();
+
+        // Get leagueNames based out of user entered
+        Console.Write("Enter League Information which you are looking for? : ");
+        var leguageNameToFilter = Console.ReadLine();
+        GetFilteredLeagueNames(leguageNameToFilter);
 
         Console.ReadLine();
+    }
+
+    private static void GetFilteredLeagueNames()
+    {
+        var leagueNames = context.Leagues.Where(league => league.Name == "NP Perimier League").ToList();
+        foreach (var league in leagueNames)
+        {
+            Console.WriteLine(league.Name);
+        }
+
+        /*
+         * info: 19-06-2023 14:45:57.586 RelationalEventId.CommandExecuted[20101] (Microsoft.EntityFrameworkCore.Database.Command)
+           Executed DbCommand (34ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+            SELECT [l].[Id], [l].[Name]
+            FROM [Leagues] AS [l]
+            WHERE [l].[Name] = N'NP Perimier League'
+            
+            Output:
+            NP Perimier League
+            NP Perimier League
+            NP Perimier League
+         */
+    }
+
+    private static void GetFilteredLeagueNames(string? filter)
+    {
+        var exactLeagueNames = context.Leagues.Where(league => league.Name == filter).ToList();
+        foreach (var league in exactLeagueNames)
+        {
+            Console.WriteLine(league.Name);
+        }
+
+        /*
+         * Enter League Information which you are looking for? : League Information
+           info: 19-06-2023 14:48:29.287 RelationalEventId.CommandExecuted[20101] (Microsoft.EntityFrameworkCore.Database.Command)
+           Executed DbCommand (48ms) [Parameters=[@__filter_0='League Information' (Size = 4000)], CommandType='Text', CommandTimeout='30']
+            SELECT [l].[Id], [l].[Name]
+            FROM [Leagues] AS [l]
+            WHERE [l].[Name] = @__filter_0
+
+            Output:
+            League information
+         */
+        
+        // Override value
+        filter = "NP";
+        var partialLeagueNames = context.Leagues.Where(league => league.Name.Contains(filter)).ToList();
+        foreach (var league in partialLeagueNames)
+        {
+            Console.WriteLine(league.Name);
+        }
+
+        /*
+         * info: 19-06-2023 17:53:06.794 RelationalEventId.CommandExecuted[20101] (Microsoft.EntityFrameworkCore.Database.Command)
+           Executed DbCommand (3ms) [Parameters=[@__filter_0='NP' (Size = 4000)], CommandType='Text', CommandTimeout='30']
+            SELECT [l].[Id], [l].[Name]
+            FROM [Leagues] AS [l]
+            WHERE (@__filter_0 LIKE N'') OR CHARINDEX(@__filter_0, [l].[Name]) > 0
+            
+            Output:
+            NP Perimier League            
+            NP Perimier League            
+            NP Perimier League
+
+         */
+
+        // Acheive the above result using EF Functions
+        filter = "NP";
+        var partialLeagueNamesUsingEFFUnctions = context.Leagues.Where(league => EF.Functions.Like(league.Name,$"{filter}%")).ToList();
+        foreach (var league in partialLeagueNamesUsingEFFUnctions)
+        {
+            Console.WriteLine(league.Name);
+        }
+
+        /*
+         * info: 19-06-2023 17:58:04.795 RelationalEventId.CommandExecuted[20101] (Microsoft.EntityFrameworkCore.Database.Command)
+            Executed DbCommand (1ms) [Parameters=[@__Format_1='NP%' (Size = 4000)], CommandType='Text', CommandTimeout='30']
+                SELECT [l].[Id], [l].[Name]
+                FROM [Leagues] AS [l]
+                WHERE [l].[Name] LIKE @__Format_1
+            Output:
+            NP Perimier League
+            NP Perimier League
+            NP Perimier League
+         */
     }
 
     private static void GetListOfLeagues()
