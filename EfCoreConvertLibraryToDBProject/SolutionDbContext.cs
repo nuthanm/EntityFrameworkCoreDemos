@@ -50,21 +50,9 @@ namespace EfCoreConvertLibraryToDBProject
     }
 }
 
-public class Sample
-{
-    public int Id { get; set; } // As per EFCore convention : ClassNameId should treat as Primary Key.
+// For Sample Class/Entity: As per EFCore convention : ClassNameId should treat as Primary Key.
 
-    public string Name { get; set; }
-}
-
-public class SampleVersion
-{
-    // [Key]
-    public int SampleId { get; set; } // Here classNameSampleId is not matched with EF Core convention so we explictly configured either annotation or fluent approach.
-    public string Name { get; set; }
-
-    public string Description { get; set; }
-}
+// For SampleVersion : // Here classNameSampleId is not matched with EF Core convention so we explictly configured either annotation or fluent approach
 
 /*
  * Difference between IQueryable vs IEnumerable?
@@ -88,3 +76,16 @@ public class SampleVersion
 // If yes, what could be the issue with the above options and how to resolve it?
 // Ans: return type should be IQueryable<Sales>
 //      return dbContext.Sales.Count;
+
+
+// CodeSnippet(s):
+
+// return dbContext.Sales.AsNoTracking().ToList();
+// vs
+// return dbContext.Sales.ToList();
+
+// Here, what is the purpose of AsNoTracking();
+
+// Q) What is the purpose of TagWith()
+// return dbContext.Sales.TagWith("GetSales data").ToList();
+// Where it helps?

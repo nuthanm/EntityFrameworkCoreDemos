@@ -4,7 +4,6 @@ using EntityFrameworkCore.Data;
 using EntityFrameworkCore.Domain;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Diagnostics.CodeAnalysis;
 
 public class Program
 {
@@ -78,21 +77,27 @@ public class Program
 
         // AsNoTracking() - tells not to track after you get the data and no need to maintain in memory
 
-        withTracking.Name = "Test for tracking";
-        withOutTracking.Name = "Test for without tracking";
+        if (withTracking is not null && withOutTracking is not null)
+        {
+            withTracking.Name = "Test for tracking";
+            withOutTracking.Name = "Test for without tracking";
 
-        var entriesBeforeSave = context.ChangeTracker.Entries();
+            var entriesBeforeSave = context.ChangeTracker.Entries();
 
-        context.SaveChanges();
+            context.SaveChanges();
 
-        var entriesAfterSave = context.ChangeTracker.Entries();
+            var entriesAfterSave = context.ChangeTracker.Entries();
+        }
     }
 
     private static void SimpleDeleteEntryFromEntity()
     {
         var deleteDuplicateRecord = context.Leagues.Find(7);
-        context.Leagues.Remove(deleteDuplicateRecord);
-        context.SaveChanges();
+        if (deleteDuplicateRecord is not null)
+        {
+            context.Leagues.Remove(deleteDuplicateRecord);
+            context.SaveChanges();
+        }
 
         /*
          * info: 19-06-2023 20:05:55.490 RelationalEventId.CommandExecuted[20101] (Microsoft.EntityFrameworkCore.Database.Command)
@@ -124,7 +129,7 @@ public class Program
         context.SaveChanges();
 
         var updatedTeam = context.Teams.Find(1);
-        Console.WriteLine($"Updated team name: {updatedTeam.Name}");
+        Console.WriteLine($"Updated team name: {updatedTeam?.Name}");
 
         /*
          * info: 19-06-2023 19:52:53.482 RelationalEventId.CommandExecuted[20101] (Microsoft.EntityFrameworkCore.Database.Command)
@@ -164,7 +169,7 @@ public class Program
         context.SaveChanges();
 
         var teamInfo = context.Teams.Find(team.Id);
-        Console.WriteLine($"Updated team name: {teamInfo.Name}");
+        Console.WriteLine($"Updated team name: {teamInfo?.Name}");
 
         /*
          * info: 19-06-2023 19:56:48.127 RelationalEventId.CommandExecuted[20101] (Microsoft.EntityFrameworkCore.Database.Command)
@@ -196,7 +201,7 @@ public class Program
         }
 
         var updatedRecord = context.Leagues.Find(7);
-        Console.Write($"Updated League Name:{updatedRecord.Name}");
+        Console.Write($"Updated League Name:{updatedRecord?.Name}");
 
 
         /*

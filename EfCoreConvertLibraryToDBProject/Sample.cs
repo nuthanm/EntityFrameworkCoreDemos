@@ -1,17 +1,18 @@
-﻿namespace EfCoreConvertLibraryToDBProject
+﻿using System.ComponentModel.DataAnnotations;
+// From the following classe(s), we set [Key] for both the classes to tell EF Core this column is primary key for this class.
+// Q) Which one is optional?
+// Q) If i want to achieve the same thing using Fluent Approach, how to do that?
+// Q) How to add proprety and it's maximum length to 255 using FLuent approach?
+// Q) How to map this class with actual table, which method is required to map?
+// Q) Which method we used to add Index()?
+// Q) Which method we used to add Constraint()?
+
+public class Sample
 {
-    // Step 1: Identify what are the Pre-Requisites for EF Core project
-    // Step 2: <WhichClassToExtend>
-    public class EvaluateDbContext
-    {
+    [Key]
+    public int Id { get; set; }
 
-    }
-
-    // Step 3: How to map tables to entities, Here what is entities?
-
-    // Step 4: How to configure db Connection string
-
-
+    public string Name { get; set; }
 }
 
 
